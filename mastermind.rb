@@ -134,7 +134,6 @@ module MastermindFunctions
   end
 
   def reduce_guess_set(hints, the_real_guess_set, last_guess)
-    #p the_real_guess_set
     guess_set = the_real_guess_set.dup
     guess_set.delete(last_guess)
     if (hints[:correct_placement] == 0 && hints[:correct_letter] == 0) 
@@ -143,7 +142,34 @@ module MastermindFunctions
           str.include?(guess_letter)  
         end
       end
-    else
+    end
+
+    guess_set.keep_if do |str|
+      comp_guess = last_guess.dup
+      guess = str.dup
+      correct_placements = comp_guess.chars.each_with_index.count do |value, index|
+        return_value = false
+        if comp_guess[index] == guess[index] && !comp_guess[index].nil?
+          comp_guess.slice!(index)
+          guess.slice!(index)
+          return_value = true
+        end
+        return_value
+      end
+      
+      correct_letters = comp_guess.chars.each_with_index.count do |value, index|
+        return_value = false
+        if guess.include?(comp_guess[index])
+          guess.slice!(guess.index(comp_guess[index]))
+          return_value = true
+        end
+        return_value
+      end
+
+      hints[:correct_placement] == correct_placements && hints[:correct_letter] == correct_letters
+    end
+
+=begin
       if (hints[:correct_placement] > 0)
         guess_set.keep_if do |str|
           correct_placements = last_guess.chars.each_with_index.reduce(0) do |total, (value, index)|
@@ -155,7 +181,7 @@ module MastermindFunctions
           correct_placements == hints[:correct_placement] 
         end
       end
-      if (hints[:correct_letter] > 0) 
+      if (hints[:correct_letter] > 0)
         guess_set.keep_if do |str|
           str_hash = str.chars.tally
           correct_letters = last_guess.chars.reduce(0) do |total, last_guess_letter|
@@ -165,10 +191,10 @@ module MastermindFunctions
             end
             total 
           end
-          correct_letters >= hints[:correct_letter]
+          (correct_letters - hints[:correct_placement]) == hints[:correct_letter]
         end
       end
-    end
+=end
     return guess_set
   end
 
@@ -187,18 +213,21 @@ module MastermindFunctions
       {correct_placement:2, correct_letter: 1},
       {correct_placement:2, correct_letter: 2}
     ]
-  def generate_guess(secret_code_length, secret_code_elements, guess_set)
-    guess_arr = guess_set.to_a
-    score_arr = guess_arr.map do |possible_guess|
-      possible_guess = "ABCD"
+  def generate_guess(secret_code_length, secret_code_elements, guess_set, base_guess_set)
+    guess_arr = base_guess_set.to_a
+    score_hash = guess_arr.reduce(Hash.new{ |hash, key| hash[key] = [] }) do |hash, possible_guess|
       highscore = POSSIBLE_HINTS.reduce(0) do |highest_score, hints|
         score = reduce_guess_set(hints, guess_set, possible_guess).size
         highest_score = score if score > highest_score
         highest_score
       end
-      highscore
+      hash[highscore] << possible_guess
+      hash
     end
-    return guess_arr[score_arr.index(score_arr.min)]
+    p guess_set
+    score_arr = score_hash[score_hash.keys.min]
+    score_arr.each{ |guess| return guess if guess_set.include?(guess)}
+    return score_arr.first
   end
 
   def two_value_guess(secret_code_length, current_turn)
@@ -284,7 +313,8 @@ class Mastermind
         array = array.map{ |str| letters_arr.map { |letter| str + letter} }
         array.flatten!
       end
-      guess_set = array.to_set
+      base_guess_set = array.to_set    
+      guess_set = base_guess_set.dup
     end
     hints = {correct_placement:0, correct_letter: 0}
     two_value = true
@@ -296,10 +326,11 @@ class Mastermind
          guess = ask_for_code(secret_code_length, secret_code_elements, true) 
          hints = check_guess(guess, secret_code, letter_list)
       else
-        two_value = false unless hints == {correct_placement:0, correct_letter: 0}
-        guess = two_value ? two_value_guess(secret_code_length, current_turn) : generate_guess(secret_code_length, secret_code_elements, guess_set)
+        two_value = false unless current_turn == 0 #hints == {correct_placement:0, correct_letter: 0}
+        guess = two_value ? two_value_guess(secret_code_length, current_turn) : generate_guess(secret_code_length, secret_code_elements, guess_set, base_guess_set)
         hints = check_guess(guess, secret_code, letter_list)
         guess_set = reduce_guess_set(hints, guess_set, guess)
+        p guess_set.include?(secret_code)
         p guess_set.size
       end
       board.log_guess(guess, hints, current_turn)
