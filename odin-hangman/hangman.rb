@@ -78,7 +78,7 @@ module AskPlayer
     while continue
       puts 'What save would you like to load? (type its name)'
       name = gets.chomp
-      name += '.csv' unless name[-1..-4] == '.csv'
+      name += '.hangman' unless name[-1..-8] == '.hangman'
       unless File.exist?("saves/#{name}")
         puts "file with name: '#{name}' doesn't exist"
         continue = continue_loading?
@@ -93,7 +93,7 @@ module AskPlayer
     print_saves()
     while true
       puts 'What would you like to name your save?'
-      name = gets.chomp + '.csv'
+      name = gets.chomp + '.hangman'
       if File.exist?("saves/#{name}")
         puts "file with name: '#{name}' already exists, would you like to overwrite it? Y/N"
         return name if yes_no()
@@ -119,13 +119,13 @@ module AskPlayer
   end
 
   def self.print_saves
-    Dir['./saves/*.csv'].each{ |file| puts file }
+    Dir['./saves/*.hangman'].each{ |file| puts file }
   end
 
   def self.dictionary_path
     continue = true
     while continue
-      puts 'What is the path (and name) to/of your dictionary'
+      puts 'What is the path (and name) to/of your dictionary (.csv)'
       name = gets.chomp
       name += '.csv' unless name[-1..-4] == '.csv'
       unless File.exist?("save #{name}")
