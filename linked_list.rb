@@ -58,6 +58,7 @@ class LinkedList
     end
 
     def at(index)
+        return -1 if (index < 0 || index >= self.size)
         curr = self.head
         i = 0
         until (i == index)
@@ -68,12 +69,20 @@ class LinkedList
     end
 
     def pop()
+        return -1 if self.size == 0
+        if (self.size == 1)
+            self.head = nil
+            self.tail = nil
+            self.size -= 1
+            return 
+        end
         curr = self.head
         until (curr.next_node == self.tail)
             curr = curr.next_node
         end
         self.tail = curr
         curr.next_node = nil
+        self.size -= 1
     end
 
     def contains?(val)
@@ -107,24 +116,27 @@ class LinkedList
     end
 
     def insert_at(val, index)
+        return -1 if (index < 0 || index > self.size)
+        return prepend(val) if index == 0
         previous = at(index-1)
         previous.next_node = Node.new(val, previous.next_node)
         self.size += 1
     end
 
     def remove_at(index)
+        return -1 if (index < 0 || index >= self.size)
+        self.size -= 1
+        if (index == 0)
+            if (size == 1) 
+                self.head = nil
+                self.tail = nil
+            else
+                self.head = self.head.next_node
+            end
+            return
+        end
         previous = at(index-1)
         previous.next_node = previous.next_node.next_node
     end
 
 end
-list = LinkedList.new
-
-list.append('dog')
-list.append('cat')
-list.append('parrot')
-list.append('hamster')
-list.append('snake')
-list.append('turtle')
-puts list
-p list
