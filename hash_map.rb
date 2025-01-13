@@ -1,7 +1,7 @@
-raise IndexError if index.negative? || index >= @buckets.length
+#raise IndexError if index.negative? || index >= @buckets.length
 
 class HashMapNode
-  private
+  public
 
   attr_accessor :key, :value, :next_node
 
@@ -18,9 +18,7 @@ class HashMap
 
   attr_reader :length
 
-  private
-
-  include HashMapNode
+  protected
 
   attr_reader :load_factor
   attr_writer :length
@@ -42,38 +40,42 @@ class HashMap
     hash_code
   end
 
-  def increase_buckets
+  def increase_buckets()
     self.capacity *= 2
     temp = HashMap.new(self.capacity)
-    self.entries.each( |node| do
+    self.entries.each {|node|
       temp.set(node[0], node[1])
-    end)
+    }
     self.buckets = temp.buckets
   end
 
+  public
+
   def set(key, value)
-    hash = self.hash(key)
+    hash = self.hash(key) % self.capacity
     if self.buckets[hash].nil?
       self.buckets[hash] = HashMapNode.new(key, value) 
     else
+      prev_node = self.buckets[hash]
       node = self.buckets[hash]
-      until node.next_node == nil
+      until node.nil?
         if node.key == key
           node.value = value
           return
         end
         node = node.next_node
       end
-      node.next_node = HashMapNode.new(key, value) 
+      prev_node.next_node = HashMapNode.new(key, value) 
     end
 
     self.length += 1
-    increase_buckets() if (self.length / self.capacity > self.load_factor)
-
+    if self.length / self.capacity.to_f > self.load_factor
+      self.increase_buckets()
+    end
   end
 
   def get(key)
-    hash = self.hash(key)
+    hash = self.hash(key) % self.capacity
     if self.buckets[hash].nil?
       return nil 
     else
@@ -89,7 +91,7 @@ class HashMap
   end
 
   def has?(key)
-    hash = self.hash(key)
+    hash = self.hash(key) % self.capacity
     if self.buckets[hash].nil?
       return false 
     else
@@ -105,12 +107,17 @@ class HashMap
   end
 
   def remove(key)
-    hash = self.hash(key)
+    hash = self.hash(key) % self.capacity
     if self.buckets[hash].nil?
       return nil 
     else
       prev_node = self.buckets[hash]
       node = self.buckets[hash]
+      if (node.next_node.nil?)
+        self.buckets[hash] = nil
+        self.length -= 1
+        return node.value
+      end
       until node == nil
         if node.key == key
           prev_node.next_node = node.next_node
@@ -165,9 +172,9 @@ class HashMap
     arr
   end
 
-
-
 end
+
+
 test = HashMap.new
 test.set('apple', 'red')
 test.set('banana', 'yellow')
@@ -210,3 +217,16 @@ test.set('jacket', 'blue')
 test.set('kite', 'pink')
 test.set('lion', 'golden')
 p test.length
+p test.get('apple')
+p test.get('1234')
+p test.has?('apple')
+p test.has?('1234')
+p test.remove('apple')
+p test.remove('apple')
+p test.length
+p test.keys
+p test.values
+p test.entries
+p test.clear
+p test.length
+p test.keys
