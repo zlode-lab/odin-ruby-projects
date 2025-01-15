@@ -48,6 +48,24 @@ class Tree
   end
   
   def insert(value)
+    curr = root
+    while (curr)
+      if (value > curr.value)
+        if curr.right_node.nil?
+          curr.right_node = Node.new(value)
+          return
+        end
+        curr = curr.right_node
+      elsif (value < curr.value)
+        if curr.left_node.nil?
+          curr.left_node = Node.new(value)
+          return
+        end
+        curr = curr.left_node
+      else 
+        return
+      end
+    end
   end
 
   def delete(value)
@@ -104,4 +122,10 @@ class Tree
 end
 array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
+tree.pretty_print
+tree.insert(13)
+tree.insert(4)
+tree.insert(58)
+tree.insert(0)
+tree.insert(78)
 tree.pretty_print
