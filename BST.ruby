@@ -69,6 +69,47 @@ class Tree
   end
 
   def delete(value)
+    curr = root
+    curr_parent = curr
+    until (curr.nil?)
+      if (curr.value == value)
+        if (curr.left_node.nil? && curr.right_node.nil?)
+          curr_parent.left_node = nil if curr_parent.left_node == curr
+          curr_parent.right_node = nil if curr_parent.right_node == curr
+          return
+        elsif (!curr.left_node.nil? && !curr.right_node.nil?)
+          node = curr.right_node
+          if (node.left_node.nil?)
+            node.left_node = curr.left_node
+            curr_parent.left_node = node if curr_parent.left_node == curr
+            curr_parent.right_node = node if curr_parent.right_node == curr
+            return
+          end
+          node_parent = curr
+          until (node.left_node.nil?)
+            node_parent = node
+            node = node.left_node
+          end
+          curr.value = node.value
+          node_parent.left_node = node.right_node.nil? ? nil : node.right_node
+          return
+        elsif (curr.left_node.nil?)
+          curr_parent.left_node = curr.right_node if curr_parent.left_node == curr
+          curr_parent.right_node = curr.right_node if curr_parent.right_node == curr
+          return
+        elsif (curr.right_node.nil?)
+          curr_parent.left_node = curr.left_node if curr_parent.left_node == curr
+          curr_parent.right_node = curr.left_node if curr_parent.right_node == curr
+          return
+        end
+      elsif (curr.value > value)
+        curr_parent = curr
+        curr = curr.left_node
+      elsif (curr.value < value)
+        curr_parent = curr
+        curr = curr.right_node
+      end
+    end
   end
 
   def find(value)
@@ -120,12 +161,24 @@ class Tree
   end
 
 end
-array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
+array = [1, 7, 4, 23, 8, 10, 4, 3, 5, 7, 10, 67, 6345, 324]
 tree = Tree.new(array)
 tree.pretty_print
-tree.insert(13)
 tree.insert(4)
 tree.insert(58)
 tree.insert(0)
 tree.insert(78)
+tree.insert(22)
+tree.insert(18)
+tree.insert(19)
+tree.insert(21)
+tree.insert(20)
+tree.insert(59)
+tree.insert(9)
+tree.pretty_print
+tree.delete(10)
+tree.delete(23)
+tree.delete(18)
+tree.delete(7)
+tree.delete(58)
 tree.pretty_print
