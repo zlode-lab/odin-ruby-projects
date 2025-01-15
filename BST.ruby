@@ -113,14 +113,39 @@ class Tree
   end
 
   def find(value)
+    curr = root
+    until (curr.nil?)
+      if (curr.value == value)
+        return curr
+      elsif (curr.value > value)
+        curr = curr.left_node
+      elsif (curr.value < value)
+        curr = curr.right_node
+      end
+    end
+    nil
   end
 
-  def level_order()
-    bfs yield
-    iter/recurs
-    if no block
-      return arr
+  def level_order
+    queue = [root]
+    index = 0
+    arr = []
+    if block_given?
+      block = lambda { |curr| yield(curr)}
+    else
+      block = lambda { |curr| arr.push(curr.value)}
     end
+    until (index > queue.size-1)
+      curr = queue[index]
+      block.call(curr)
+      queue.push(curr.left_node) unless curr.left_node.nil?
+      queue.push(curr.right_node) unless curr.right_node.nil?
+      index += 1
+    end
+    return arr unless arr.empty?
+  end
+
+  def level_order_recursive
   end
 
   def inorder
@@ -157,6 +182,7 @@ class Tree
   end
 
   def rebalance
+    inorder to make array
     make arr and build_tree()
   end
 
@@ -182,3 +208,7 @@ tree.delete(18)
 tree.delete(7)
 tree.delete(58)
 tree.pretty_print
+p tree.find(58)
+p tree.find(22)
+p tree.level_order{ |val| p val.value}
+p tree.level_order
