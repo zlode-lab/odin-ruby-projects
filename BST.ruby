@@ -15,8 +15,7 @@ class Tree
 
   def build_tree(arr)
     arr = arr.uniq.sort
-    p arr
-    root = Node.new(arr[arr.length / 2])
+    root = Node.new(arr[(arr.length-1) / 2])
     queue = [{node: root, range: [0, (arr.length - 1)]}]
     index = 0
     while (index < queue.size)
@@ -292,12 +291,11 @@ class Tree
 
   def rebalance
     arr = self.inorder
-    p arr
     @root = build_tree(arr)
   end
 
 end
-array = [1, 7, 4, 23, 8, 10, 4, 3, 5, 7, 10, 67, 6345, 324]
+array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
 tree.insert(25)
 tree.pretty_print
@@ -305,6 +303,9 @@ p tree.balanced?
 tree.rebalance
 tree.pretty_print
 p tree.balanced?
+tree.insert(22)
+tree.rebalance
+tree.pretty_print
 =begin
 p tree.balanced?
 tree.insert(0)
