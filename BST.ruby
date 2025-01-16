@@ -145,27 +145,79 @@ class Tree
     return arr unless arr.empty?
   end
 
-  def level_order_recursive
-  end
-
-  def inorder
-    yield
-    if no block
-      return arr
+  def level_order_recursive(queue = [root], &block)
+    return if queue.empty?
+    curr = queue.shift()
+    queue.push(curr.left_node) unless curr.left_node.nil?
+    queue.push(curr.right_node) unless curr.right_node.nil?
+    if block_given?
+      yield(curr)
+      level_order_recursive(queue, &block)
+    else
+      val = level_order_recursive(queue)
+      return [curr.value] + val unless val.nil?
+      return [curr.value]
     end
   end
 
-  def preorder
-    yield
-    if no block
-      return arr
+  def inorder(node = root, &block)
+    return if node.nil?
+    if block_given?
+      inorder(node.left_node, &block)
+      yield(node)
+      inorder(node.right_node, &block)
+    else
+      val = []
+
+      left_val = inorder(node.left_node)
+      val += left_val unless left_val.nil?
+
+      val += [node.value]
+
+      right_val = inorder(node.right_node)
+      val += right_val unless right_val.nil?
+
+      return val
     end
   end
 
-  def postorder
-    yield
-    if no block
-      return arr
+  def preorder(node = root, &block)
+    return if node.nil?
+    if block_given?
+      yield(node)
+      preorder(node.left_node, &block)
+      preorder(node.right_node, &block)
+    else
+      val = [node.value]
+
+      left_val = preorder(node.left_node)
+      val += left_val unless left_val.nil?
+
+      right_val = preorder(node.right_node)
+      val += right_val unless right_val.nil?
+
+      return val
+    end
+  end
+
+  def postorder(node = root, &block)
+    return if node.nil?
+    if block_given?
+      postorder(node.left_node, &block)
+      postorder(node.right_node, &block)
+      yield(node)
+    else
+      val = []
+
+      left_val = postorder(node.left_node)
+      val += left_val unless left_val.nil?
+
+      right_val = postorder(node.right_node)
+      val += right_val unless right_val.nil?
+
+      val += [node.value]
+
+      return val
     end
   end
 
@@ -212,3 +264,12 @@ p tree.find(58)
 p tree.find(22)
 p tree.level_order{ |val| p val.value}
 p tree.level_order
+puts "recursive"
+p tree.level_order_recursive{ |val| p val.value}
+p tree.level_order_recursive
+p tree.preorder{ |val| p val.value}
+p tree.inorder{ |val| p val.value}
+p tree.postorder{ |val| p val.value}
+p tree.preorder
+p tree.inorder
+p tree.postorder
