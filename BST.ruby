@@ -10,12 +10,12 @@ class Tree
   attr_reader :root
   private
   def initialize(array = [])
-    p array
     @root = build_tree(array)
   end
 
   def build_tree(arr)
     arr = arr.uniq.sort
+    p arr
     root = Node.new(arr[arr.length / 2])
     queue = [{node: root, range: [0, (arr.length - 1)]}]
     index = 0
@@ -291,20 +291,26 @@ class Tree
   end
 
   def rebalance
-    inorder to make array
-    make arr and build_tree()
+    arr = self.inorder
+    p arr
+    @root = build_tree(arr)
   end
 
 end
 array = [1, 7, 4, 23, 8, 10, 4, 3, 5, 7, 10, 67, 6345, 324]
 tree = Tree.new(array)
+tree.insert(25)
 tree.pretty_print
+p tree.balanced?
+tree.rebalance
+tree.pretty_print
+p tree.balanced?
+=begin
 p tree.balanced?
 tree.insert(0)
 p tree.balanced?
 tree.insert(25)
 p tree.balanced?
-=begin
 tree.insert(4)
 tree.insert(58)
 tree.insert(0)
