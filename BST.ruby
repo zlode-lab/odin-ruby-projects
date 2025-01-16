@@ -222,15 +222,72 @@ class Tree
   end
 
   def height(node)
-    node to deepest lead node
+    queue = [node, "new level"]
+    depth = 0
+    index = 0
+    until (index > queue.size-1)
+      curr = queue[index]
+      index += 1
+      if curr == "new level"
+        queue.push("new level")
+        if (queue[index] == "new level")
+          break;
+        end
+        depth += 1
+        next
+      end
+      queue.push(curr.left_node) unless curr.left_node.nil?
+      queue.push(curr.right_node) unless curr.right_node.nil?
+    end
+    depth
   end
 
   def depth(node)
-    root to node
+    queue = [root, "new level"]
+    depth = 0
+    index = 0
+    until (index > queue.size-1)
+      curr = queue[index]
+      index += 1
+      if curr == "new level"
+        queue.push("new level")
+        if (queue[index] == "new level")
+          break;
+        end
+        depth += 1
+        next
+      end
+      if curr == node
+        return depth
+      end
+      queue.push(curr.left_node) unless curr.left_node.nil?
+      queue.push(curr.right_node) unless curr.right_node.nil?
+    end
+    return "node not found"
   end
 
   def balanced?
-    #true false
+    stack = [root]
+    until (stack.empty?)
+      curr = stack.pop
+
+      if curr.left_node.nil?
+        left_height = 0
+      else
+        left_height = self.height(curr.left_node)+1
+        stack.push(curr.left_node)
+      end
+
+      if curr.right_node.nil?
+        right_height = 0
+      else
+        right_height = self.height(curr.right_node)+1
+        stack.push(curr.right_node)
+      end
+
+      return false if (left_height - right_height).abs > 1
+    end
+    return true
   end
 
   def rebalance
@@ -242,6 +299,12 @@ end
 array = [1, 7, 4, 23, 8, 10, 4, 3, 5, 7, 10, 67, 6345, 324]
 tree = Tree.new(array)
 tree.pretty_print
+p tree.balanced?
+tree.insert(0)
+p tree.balanced?
+tree.insert(25)
+p tree.balanced?
+=begin
 tree.insert(4)
 tree.insert(58)
 tree.insert(0)
@@ -273,3 +336,8 @@ p tree.postorder{ |val| p val.value}
 p tree.preorder
 p tree.inorder
 p tree.postorder
+tree.pretty_print
+p tree.height(tree.find(19))
+p tree.depth(tree.find(59))
+p tree.balanced?
+=end
