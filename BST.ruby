@@ -295,56 +295,22 @@ class Tree
   end
 
 end
-array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
+
+array = (Array.new(15) { rand(1..100) })
 tree = Tree.new(array)
-tree.insert(25)
 tree.pretty_print
-p tree.balanced?
-tree.rebalance
-tree.pretty_print
-p tree.balanced?
-tree.insert(22)
-tree.rebalance
-tree.pretty_print
-=begin
-p tree.balanced?
-tree.insert(0)
-p tree.balanced?
-tree.insert(25)
-p tree.balanced?
-tree.insert(4)
-tree.insert(58)
-tree.insert(0)
-tree.insert(78)
-tree.insert(22)
-tree.insert(18)
-tree.insert(19)
-tree.insert(21)
-tree.insert(20)
-tree.insert(59)
-tree.insert(9)
-tree.pretty_print
-tree.delete(10)
-tree.delete(23)
-tree.delete(18)
-tree.delete(7)
-tree.delete(58)
-tree.pretty_print
-p tree.find(58)
-p tree.find(22)
-p tree.level_order{ |val| p val.value}
+tree.balanced?
 p tree.level_order
-puts "recursive"
-p tree.level_order_recursive{ |val| p val.value}
-p tree.level_order_recursive
-p tree.preorder{ |val| p val.value}
-p tree.inorder{ |val| p val.value}
-p tree.postorder{ |val| p val.value}
 p tree.preorder
 p tree.inorder
 p tree.postorder
-tree.pretty_print
-p tree.height(tree.find(19))
-p tree.depth(tree.find(59))
+200.times do
+  tree.insert(rand(1..1000))
+end
 p tree.balanced?
-=end
+tree.rebalance
+p tree.balanced?
+p tree.level_order
+p tree.preorder
+p tree.inorder
+p tree.postorder
